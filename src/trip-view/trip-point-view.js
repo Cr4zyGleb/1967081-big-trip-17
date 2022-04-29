@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-const createTaskPathPointViewTemplate = () => (`<li class="trip-events__item">
+const createTripPointViewTemplate = () => (`<li class="trip-events__item">
 <div class="event">
   <time class="event__date" datetime="2019-03-18">MAR 18</time>
   <div class="event__type">
@@ -38,9 +38,9 @@ const createTaskPathPointViewTemplate = () => (`<li class="trip-events__item">
 </div>
 </li>`);
 
-export default class TaskPathPointView {
+export default class TripPointView {
   getTemplate() {
-    return createTaskPathPointViewTemplate();
+    return createTripPointViewTemplate();
   }
 
   getElement() {

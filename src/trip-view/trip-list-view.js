@@ -1,10 +1,10 @@
 import {createElement} from '../render.js';
 
-const createTaskList = () => ('<ul class="trip-events__list"></ul>');
+const createTripListTemplate = () => ('<ul class="trip-events__list"></ul>');
 
-export default class TaskListView {
+export default class TripListView {
   getTemplate() {
-    return createTaskList();
+    return createTripListTemplate();
   }
 
   getElement() {
