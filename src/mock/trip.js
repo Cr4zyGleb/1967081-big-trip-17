@@ -53,12 +53,13 @@ const generateOffer = () => ({
   offers: generateOffers()
 });
 
-export const generatePoint = (id = 0) => ({
+export const generatePoint = (id = 0, dayFromTo) => ({
+
   destination: generateDestination(),
   basePrice: getRandomInteger(100,1000),
   id: id,
-  dateFrom: '2019-07-10T22:55:56.845Z',
-  dateTo: '2019-08-10T22:55:56.845Z',
+  dateFrom: dayFromTo.from,
+  dateTo: dayFromTo.to,
   isFavorite: getRandomInteger(0,1),
   offers: generateOffer(),
   type: generateType()
