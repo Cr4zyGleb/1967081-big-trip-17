@@ -36,7 +36,7 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const humanizeTaskDueDate = (dueDate) => dayjs(dueDate).format('D MMMM');
+const humanizeTaskDueDate = (dueDate, format = 'D MMMM') => dayjs(dueDate).format(format);
 
 const getTimeDuration = (dateFrom, dateTo) => {
   const timeDiff = Math.abs(dayjs(dateTo) - dayjs(dateFrom));
@@ -47,11 +47,11 @@ const getTimeDuration = (dateFrom, dateTo) => {
   const minutesCount = Math.floor((timeDiff - daysInSeconds - hoursInSeconds) / (1000 * 60));
   const timeString = () => {
     let result = '';
-    result = daysCount ? `${result}${daysCount}D` : result;
+    result = daysCount ? `${result} ${daysCount}D` : result;
     const hoursString = hoursCount < 10 ? `0${hoursCount}` : hoursCount;
     const minutesString = minutesCount < 10 ? `0${minutesCount}` : minutesCount;
     result = hoursCount || (minutesCount && daysCount) ? `${result}${hoursString}H` : result;
-    result = minutesCount ? `${result}${minutesString}M` : result;
+    result = minutesCount ? `${result} ${minutesString}M` : result;
     return result;
   };
   return timeString();
