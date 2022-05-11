@@ -51,10 +51,6 @@ export default class TripPresenter {
     editPointFormChangeViewButton.addEventListener('click', () => {
       replaceEditFormToTripPoint();
     });
-    submitFormPointEditView.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceEditFormToTripPoint();
-    });
 
     submitFormPointEditView.addEventListener('submit', (evt) => {
       evt.preventDefault();
