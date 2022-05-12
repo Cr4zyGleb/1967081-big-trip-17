@@ -1,9 +1,10 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 
 import TripSortView from '../trip-view/trip-sort-view.js';
 import TripPointEditView from '../trip-view/trip-point-edit-view.js';
 import TripPointView from '../trip-view/trip-point-view.js';
 import TripListView from '../trip-view/trip-list-view.js';
+import TripEmptyListView from '../trip-view/trip-empty-list-view.js';
 export default class TripPresenter {
   #pointsModel = null;
   #pageTripEventsElement = null;
@@ -13,12 +14,21 @@ export default class TripPresenter {
     this.#pointsModel = pointsModel;
     this.#points = [...this.#pointsModel.points];
     this.#pageTripEventsElement = pageTripEventsElement;
-    render(new TripSortView(), this.#pageTripEventsElement);
-    render(this.#tripListComponent, this.#pageTripEventsElement);
-    // render(new TripPointEditView(), this.#taskListComponent.element);
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderTripPoint(this.#points[i]);
+    if (this.#points.length) {
+      render(new TripSortView(), this.#pageTripEventsElement);
+      render(this.#tripListComponent, this.#pageTripEventsElement);
+      for (let i = 0; i < this.#points.length; i++) {
+        this.#renderTripPoint(this.#points[i]);
+      }
+    } else {
+      render(new TripEmptyListView('Click New Event to create your first point'), this.#pageTripEventsElement);
     }
+
+
+    // if (!this.#points.length) {
+    //   render(this.#tripListComponent, this.#pageTripEventsElement);
+    // }
+
   };
 
   #renderTripPoint = (tripPoint) => {
@@ -26,7 +36,7 @@ export default class TripPresenter {
     const editPointView = new TripPointEditView(tripPoint);
     const tripPointChangeViewButton = tripComponent.element.querySelector('.event__rollup-btn');
     const editPointFormChangeViewButton = editPointView.element.querySelector('.event__rollup-btn');
-    const submitFormPointEditView =  editPointView.element.querySelector('.event--edit');
+    const submitFormPointEditView = editPointView.element.querySelector('.event--edit');
     const replaceTripPointToEditForm = () => {
       this.#tripListComponent.element.replaceChild(editPointView.element, tripComponent.element);
     };
