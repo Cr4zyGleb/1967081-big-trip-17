@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import { humanizeTaskDueDate } from '../utils.js';
 
 const createTripPointEditViewTemplate = (point) => {
@@ -174,27 +174,38 @@ const createTripPointEditViewTemplate = (point) => {
 </li>`);
 };
 
-export default class TripPointEditView {
+export default class TripPointEditView extends AbstractView {
   #element = null;
-  #piont = null;
+  #point = null;
 
   constructor(point) {
-    this.#piont = point;
+    super();
+    this.#point = point;
   }
 
   get template() {
-    return createTripPointEditViewTemplate(this.#piont);
+    return createTripPointEditViewTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
+  setSubmitHandler = (callback) => {
+    this._callback.submit = callback;
+    this.element.querySelector('.event--edit').addEventListener('click', this.#submitHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = () => {
+    this._callback.click();
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.callback);
+  };
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submit();
+    this.element.querySelector('.event--edit').removeEventListener('submit', this.callback);
+  };
+
 }
