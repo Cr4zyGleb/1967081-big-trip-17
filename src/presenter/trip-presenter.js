@@ -24,19 +24,11 @@ export default class TripPresenter {
       render(new TripEmptyListView('Click New Event to create your first point'), this.#pageTripEventsElement);
     }
 
-
-    // if (!this.#points.length) {
-    //   render(this.#tripListComponent, this.#pageTripEventsElement);
-    // }
-
   };
 
   #renderTripPoint = (tripPoint) => {
     const tripComponent = new TripPointView(tripPoint);
     const editPointView = new TripPointEditView(tripPoint);
-    const tripPointChangeViewButton = tripComponent.element.querySelector('.event__rollup-btn');
-    const editPointFormChangeViewButton = editPointView.element.querySelector('.event__rollup-btn');
-    const submitFormPointEditView = editPointView.element.querySelector('.event--edit');
     const replaceTripPointToEditForm = () => {
       this.#tripListComponent.element.replaceChild(editPointView.element, tripComponent.element);
     };
@@ -53,19 +45,12 @@ export default class TripPresenter {
       }
     };
 
-    tripPointChangeViewButton.addEventListener('click', () => {
+    tripComponent.setClickHandler(()=>{
       replaceTripPointToEditForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
-
-    editPointFormChangeViewButton.addEventListener('click', () => {
-      replaceEditFormToTripPoint();
-    });
-
-    submitFormPointEditView.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceEditFormToTripPoint();
-    });
+    editPointView.setClickHandler(replaceEditFormToTripPoint);
+    editPointView.setSubmitHandler(replaceEditFormToTripPoint);
 
     render(tripComponent, this.#tripListComponent.element);
   };
