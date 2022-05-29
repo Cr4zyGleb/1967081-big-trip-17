@@ -1,57 +1,76 @@
 import { render } from '../render.js';
-
 import TripSortView from '../trip-view/trip-sort-view.js';
-import TripPointEditView from '../trip-view/trip-point-edit-view.js';
-import TripPointView from '../trip-view/trip-point-view.js';
 import TripListView from '../trip-view/trip-list-view.js';
 import TripEmptyListView from '../trip-view/trip-empty-list-view.js';
+import PointPresenter from './trip-point-presenter.js';
+import { updateItem } from '../utils.js';
+
+
 export default class TripPresenter {
   #pointsModel = null;
+  #sourcedPoints = null;
+
   #pageTripEventsElement = null;
   #points = [];
   #tripListComponent = new TripListView();
+  #pointPresenter = new Map();
   init = (pageTripEventsElement, pointsModel) => {
+    this.#pageTripEventsElement = pageTripEventsElement;
     this.#pointsModel = pointsModel;
     this.#points = [...this.#pointsModel.points];
-    this.#pageTripEventsElement = pageTripEventsElement;
-    if (this.#points.length) {
-      render(new TripSortView(), this.#pageTripEventsElement);
-      render(this.#tripListComponent, this.#pageTripEventsElement);
-      for (let i = 0; i < this.#points.length; i++) {
-        this.#renderTripPoint(this.#points[i]);
-      }
-    } else {
-      render(new TripEmptyListView('Click New Event to create your first point'), this.#pageTripEventsElement);
-    }
-
+    this.#sourcedPoints = [...this.#pointsModel.points];
+    this.#renderMain();
   };
 
-  #renderTripPoint = (tripPoint) => {
-    const tripComponent = new TripPointView(tripPoint);
-    const editPointView = new TripPointEditView(tripPoint);
-    const replaceTripPointToEditForm = () => {
-      this.#tripListComponent.element.replaceChild(editPointView.element, tripComponent.element);
-    };
+  #renderMain = () => {
+    if (this.#points.length) {
+      this.#renderTripSortView();
+      this.#renderTripListComponent();
+      this.#renderPoints();
+    } else {
+      this.#renderTripEmptyListView();
+    }
+  };
 
-    const replaceEditFormToTripPoint = () => {
-      this.#tripListComponent.element.replaceChild(tripComponent.element, editPointView.element);
-    };
+  renderPoint = (point) => {
+    this.#renderPoint(point);
+  };
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceEditFormToTripPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleTaskChange, this.#handleModeChange);
+    pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
+  };
 
-    tripComponent.setClickHandler(()=>{
-      replaceTripPointToEditForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-    editPointView.setClickHandler(replaceEditFormToTripPoint);
-    editPointView.setSubmitHandler(replaceEditFormToTripPoint);
+  #renderPoints = () => {
+    for (let i = 0; i < this.#points.length; i++) {
+      this.#renderPoint(this.#points[i]);
+    }
+  };
 
-    render(tripComponent, this.#tripListComponent.element);
+  #renderTripSortView = () => {
+    render(new TripSortView(), this.#pageTripEventsElement);
+  };
+
+  #renderTripEmptyListView = () => {
+    render(new TripEmptyListView('Click New Event to create your first point'), this.#pageTripEventsElement);
+  };
+
+  #renderTripListComponent = () => {
+    render(this.#tripListComponent, this.#pageTripEventsElement);
+  };
+
+  // #clearPointList = () => {
+  //   this.#pointPresenter.forEach((presenter) => presenter.destroy());
+  //   this.#pointPresenter.clear();
+  // };
+
+  #handleTaskChange = (updatedPoint) => {
+    this.#tripListComponent = updateItem(this.#points , updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 }
