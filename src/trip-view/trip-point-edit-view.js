@@ -192,20 +192,20 @@ export default class TripPointEditView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   };
 
-  setSubmitHandler = (callback) => {
-    this._callback.submit = callback;
-    this.element.querySelector('.event--edit').addEventListener('click', this.#submitHandler);
-  };
-
   #clickHandler = () => {
     this._callback.click();
-    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.callback);
+    // this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#clickHandler);
+  };
+
+  setSubmitHandler = (callback) => {
+    this._callback.submit = callback;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   };
 
   #submitHandler = (evt) => {
     evt.preventDefault();
     this._callback.submit();
-    this.element.querySelector('.event--edit').removeEventListener('submit', this.callback);
+    // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
 }

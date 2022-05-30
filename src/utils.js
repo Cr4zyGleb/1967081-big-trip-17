@@ -57,6 +57,20 @@ const getTimeDuration = (dateFrom, dateTo) => {
   return timeString();
 };
 
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
 const getRandomDayFromTo = () => DAYS[getRandomInteger(0,DAYS.length-1)];
 
-export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo };
+export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem };

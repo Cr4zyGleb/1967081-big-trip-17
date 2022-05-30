@@ -93,7 +93,28 @@ export default class TripPointView extends AbstractView {
 
   #clickHandler = () => {
     this._callback.click();
-    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.callback);
+  };
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  };
+
+  setonEscKeyDownHandler = (callback) => {
+    this._callback.setOnEscKeyDownHandler = callback;
+    document.addEventListener('keydown', this.#onEscKeyDownHandler);
+  };
+
+  #onEscKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._callback.setOnEscKeyDownHandler();
+    }
   };
 
 }

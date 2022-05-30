@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import {getRandomInteger} from '../utils.js';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
@@ -53,14 +54,13 @@ const generateOffer = () => ({
   offers: generateOffers()
 });
 
-export const generatePoint = (id = 0, dayFromTo) => ({
-
+export const generatePoint = (dayFromTo) => ({
   destination: generateDestination(),
   basePrice: getRandomInteger(100,1000),
-  id: id,
+  id: nanoid(),
   dateFrom: dayFromTo.from,
   dateTo: dayFromTo.to,
-  isFavorite: getRandomInteger(0,1),
+  isFavorite: false,
   offers: generateOffer(),
   type: generateType()
 });
