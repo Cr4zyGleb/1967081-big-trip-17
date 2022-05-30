@@ -60,13 +60,13 @@ export default class TripPresenter {
     render(this.#tripListComponent, this.#pageTripEventsElement);
   };
 
-  // #clearPointList = () => {
-  //   this.#pointPresenter.forEach((presenter) => presenter.destroy());
-  //   this.#pointPresenter.clear();
-  // };
+  #clearPointList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
 
   #handleTaskChange = (updatedPoint) => {
-    this.#tripListComponent = updateItem(this.#points , updatedPoint);
+    this.#points = updateItem(this.#points , updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 

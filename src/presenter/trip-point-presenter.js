@@ -29,17 +29,10 @@ export default class PointPresenter {
     const prevEditPointView = this.#editPointView;
     this.#tripComponent = new TripPointView(this.#point);
     this.#editPointView = new TripPointEditView(this.#point);
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        this.#replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
 
     this.#tripComponent.setClickHandler(() => {
       this.#replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
+      document.addEventListener('keydown', this.#onEscKeyDownHandler);
     });
 
     this.#tripComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -48,7 +41,7 @@ export default class PointPresenter {
 
     if (prevTripComponent === null) {
       render(this.#tripComponent, this.#tripListComponent.element);
-      return 1;
+      return;
     }
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#tripComponent, prevTripComponent);
@@ -63,7 +56,7 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
   #replacePointToForm = () => {
@@ -74,7 +67,21 @@ export default class PointPresenter {
 
   #replaceFormToPoint = () => {
     replace(this.#tripComponent, this.#editPointView);
+    document.removeEventListener('keydown', this.#onEscKeyDownHandler);
     this.#mode = Mode.DEFAULT;
+  };
+
+  // setonEscKeyDownHandler = (callback) => {
+  //   this._callback.setOnEscKeyDownHandler = callback;
+  //   document.addEventListener('keydown', this.#onEscKeyDownHandler);
+  // };
+
+  #onEscKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#replaceFormToPoint();
+      document.removeEventListener('keydown', this.#onEscKeyDownHandler);
+    }
   };
 
   resetView = () => {
@@ -83,9 +90,9 @@ export default class PointPresenter {
     }
   };
 
-  // destroy = () => {
-  //   remove(this.#tripComponent);
-  //   remove(this.#editPointView);
-  // };
+  destroy = () => {
+    remove(this.#tripComponent);
+    remove(this.#editPointView);
+  };
 
 }
