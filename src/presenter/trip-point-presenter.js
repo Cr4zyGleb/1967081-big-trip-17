@@ -71,11 +71,6 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   };
 
-  // setonEscKeyDownHandler = (callback) => {
-  //   this._callback.setOnEscKeyDownHandler = callback;
-  //   document.addEventListener('keydown', this.#onEscKeyDownHandler);
-  // };
-
   #onEscKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();

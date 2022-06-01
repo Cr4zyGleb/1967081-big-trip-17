@@ -1,3 +1,4 @@
+import { DATE_HOURS_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view';
 import { getTimeDuration, humanizeTaskDueDate } from '../utils.js';
 
@@ -8,8 +9,12 @@ const createTripPointViewTemplate = (point) => {
     ? humanizeTaskDueDate(dateFrom)
     : '';
 
-  const dateToHumanize = dateTo !== null
-    ? humanizeTaskDueDate(dateTo)
+  const dateFromHumanizeHours = dateFrom !== null
+    ? humanizeTaskDueDate(dateFrom, DATE_HOURS_FORMAT)
+    : '';
+
+  const dateToHumanizeHours = dateTo !== null
+    ? humanizeTaskDueDate(dateTo, DATE_HOURS_FORMAT)
     : '';
 
   const destinationName = destination.name;
@@ -23,7 +28,7 @@ const createTripPointViewTemplate = (point) => {
     let templateList = '';
 
     offers.offers.forEach((element) => {
-      const {title, price} = element;
+      const { title, price } = element;
       const template = `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       +€&nbsp;
@@ -46,9 +51,9 @@ const createTripPointViewTemplate = (point) => {
   <h3 class="event__title">${type} ${destinationName}</h3>
   <div class="event__schedule">
     <p class="event__time">
-      <time class="event__start-time" datetime="${dateFrom}">${dateFromHumanize}</time>
+      <time class="event__start-time" datetime="${dateFrom}">${dateFromHumanizeHours}</time>
       —
-      <time class="event__end-time" datetime="${dateTo}">${dateToHumanize}</time>
+      <time class="event__end-time" datetime="${dateTo}">${dateToHumanizeHours}</time>
     </p>
     <p class="event__duration">${eventDuration}</p>
   </div>
@@ -103,18 +108,6 @@ export default class TripPointView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
-  };
-
-  setonEscKeyDownHandler = (callback) => {
-    this._callback.setOnEscKeyDownHandler = callback;
-    document.addEventListener('keydown', this.#onEscKeyDownHandler);
-  };
-
-  #onEscKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this._callback.setOnEscKeyDownHandler();
-    }
   };
 
 }
