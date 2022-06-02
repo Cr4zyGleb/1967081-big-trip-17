@@ -24,6 +24,14 @@ const DAYS = [
   {
     from: '2019-07-10T22:55:56.845Z',
     to: '2019-07-10T22:56:56.845Z'
+  },
+  {
+    from: '2018-03-10T22:55:56.845Z',
+    to: '2018-03-10T22:56:56.845Z'
+  },
+  {
+    from: '2020-09-10T22:55:56.845Z',
+    to: '2020-09-10T22:56:56.845Z'
   }
 ];
 
@@ -71,6 +79,35 @@ const updateItem = (items, update) => {
   ];
 };
 
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const sortTaskDate = (taskA, taskB) => {
+  const weight = getWeightForNullDate(taskA.dateFrom, taskB.dateFrom);
+
+  return weight ?? dayjs(taskA.dateFrom).diff(dayjs(taskB.dateFrom));
+};
+
+const sortTaskTime = (taskA, taskB) => {
+  const weight = getWeightForNullDate(taskA.dateFrom, taskB.dateFrom);
+  return weight ?? dayjs(taskB.dateFrom).diff(dayjs(taskB.dateTo)) - dayjs(taskA.dateFrom).diff(dayjs(taskA.dateTo));
+};
+
+const sortTaskPrice = (taskA, taskB) => (taskA.basePrice - taskB.basePrice);
+
 const getRandomDayFromTo = () => DAYS[getRandomInteger(0,DAYS.length-1)];
 
-export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem };
+export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice };
