@@ -44,7 +44,7 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const humanizeTaskDueDate = (dueDate, format = 'D MMMM') => dayjs(dueDate).format(format);
+const humanizeTaskDueDate = (dueDate, format = 'D MMM') => dayjs(dueDate).format(format);
 
 const getTimeDuration = (dateFrom, dateTo) => {
   const timeDiff = Math.abs(dayjs(dateTo) - dayjs(dateFrom));
@@ -109,5 +109,6 @@ const sortTaskTime = (taskA, taskB) => {
 const sortTaskPrice = (taskA, taskB) => (taskA.basePrice - taskB.basePrice);
 
 const getRandomDayFromTo = () => DAYS[getRandomInteger(0,DAYS.length-1)];
+
 
 export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice };

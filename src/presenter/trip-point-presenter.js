@@ -39,6 +39,7 @@ export default class PointPresenter {
     this.#editPointView.setClickHandler(this.#replaceFormToPoint);
     this.#editPointView.setSubmitHandler(this.#replaceFormToPoint);
 
+
     if (prevTripComponent === null) {
       render(this.#tripComponent, this.#tripListComponent.element);
       return;
