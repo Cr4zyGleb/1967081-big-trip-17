@@ -5,6 +5,6 @@ const SortType = {
   DISABLED : 'DISABLED'
 };
 
-const DATE_HOURS_FORMAT = 'HH:MM';
+const DATE_HOURS_FORMAT = 'HH:mm';
 
 export { SortType, DATE_HOURS_FORMAT };

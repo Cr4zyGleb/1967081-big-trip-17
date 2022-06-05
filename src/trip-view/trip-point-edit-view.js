@@ -5,7 +5,7 @@ import { humanizeTaskDueDate } from '../utils.js';
 
 const createTripPointEditViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, offers, dateTo, type } = point;
-  const formatDate = 'DD/MM/YY hh:mm';
+  const formatDate = 'DD/MM/YY HH:mm';
   const isDueDestination = destination !== null;
   const destinationName = isDueDestination ? destination.name : '';
   const destinationDescription = isDueDestination ? destination.description : '';
@@ -207,7 +207,8 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #clickHandler = () => {
-    this._callback.click();
+    this.updateElement(this.#point);
+    this._callback.click(this.#point);
     // this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#clickHandler);
   };
 
@@ -218,7 +219,8 @@ export default class TripPointEditView extends AbstractStatefulView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submit();
+    this.#point = this._state;
+    this._callback.submit(this.#point);
     // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
@@ -239,9 +241,30 @@ export default class TripPointEditView extends AbstractStatefulView {
     }
   };
 
+  #eventPriceOnChangeHandler = (evt) => {
+    this._setState({
+      basePrice: evt.target.value
+    });
+  };
+
+  #eventDateStartOnChangeHandler = (evt) => {
+    this._setState({
+      dateFrom: evt.target.value
+    });
+  };
+
+  #eventDateEndOnChangeHandler = (evt) => {
+    this._setState({
+      dateTo: evt.target.value
+    });
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeOnChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationOnChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceOnChangeHandler);
+    this.element.querySelector('#event-start-time-1').addEventListener('change', this.#eventDateStartOnChangeHandler);
+    this.element.querySelector('#event-end-time-1').addEventListener('change', this.#eventDateEndOnChangeHandler);
   };
 
   _restoreHandlers = () => {
