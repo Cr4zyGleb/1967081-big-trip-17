@@ -87,11 +87,10 @@ export default class TripPointView extends AbstractView {
   constructor(point) {
     super();
     this.#point = point;
-    this._state = point;
   }
 
   get template() {
-    return createTripPointViewTemplate(this._state);
+    return createTripPointViewTemplate(this.#point);
   }
 
   // static parsePointToState = (point) => ({...point,

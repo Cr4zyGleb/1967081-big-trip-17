@@ -32,7 +32,10 @@ export default class PointPresenter {
 
     this.restoreTripPointHandlers();
     this.#editPointView.setClickHandler(this.#replaceFormToPoint);
-    this.#editPointView.setSubmitHandler(this.#replaceFormToPoint);
+    this.#editPointView.setSubmitHandler((pointSubmit) => {
+      this.#changeData({ ...pointSubmit });
+      this.#replaceFormToPoint();
+    });
 
 
     if (prevTripComponent === null) {
@@ -61,8 +64,7 @@ export default class PointPresenter {
     this.#mode = Mode.EDITING;
   };
 
-  #replaceFormToPoint = (point) => {
-    this.#point = point;
+  #replaceFormToPoint = () => {
     this.#tripComponent = new TripPointView(this.#point);
     this.restoreTripPointHandlers();
     replace(this.#tripComponent, this.#editPointView);

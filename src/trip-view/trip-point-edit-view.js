@@ -2,6 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { CITIES, getDestination } from '../mock/cities';
 import { generateIdOffers, getOffer } from '../mock/offers';
 import { humanizeTaskDueDate } from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const createTripPointEditViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, offers, dateTo, type } = point;
@@ -189,11 +191,19 @@ const createTripPointEditViewTemplate = (point) => {
 
 export default class TripPointEditView extends AbstractStatefulView {
 
+  #datepicker = null;
   #point = null;
   constructor(point) {
     super();
-    this._state = point;
-    this.#point = point;
+    this._state = {
+      ...point,
+      destination: {
+        ...point.destination
+      },
+      offers: [
+        ...point.offers
+      ]
+    };
     this.#setInnerHandlers();
   }
 
@@ -207,8 +217,8 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #clickHandler = () => {
-    this.updateElement(this.#point);
-    this._callback.click(this.#point);
+    this.updateElement(this._state);
+    this._callback.click(this._state);
     // this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#clickHandler);
   };
 
@@ -225,36 +235,34 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #eventTypeOnChangeHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       type: evt.target.value,
       offers: generateIdOffers(evt.target.value)
     });
-    this.updateElement(this._state);
   };
 
   #eventDestinationOnChangeHandler = (evt) => {
     if (evt.target.value) {
-      this._setState({
+      this.updateElement({
         destination: getDestination(evt.target.value)
       });
-      this.updateElement(this._state);
     }
   };
 
   #eventPriceOnChangeHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       basePrice: evt.target.value
     });
   };
 
   #eventDateStartOnChangeHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       dateFrom: evt.target.value
     });
   };
 
   #eventDateEndOnChangeHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       dateTo: evt.target.value
     });
   };
@@ -265,6 +273,21 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceOnChangeHandler);
     this.element.querySelector('#event-start-time-1').addEventListener('change', this.#eventDateStartOnChangeHandler);
     this.element.querySelector('#event-end-time-1').addEventListener('change', this.#eventDateEndOnChangeHandler);
+  };
+
+  #setDatepicker = () => {
+    if (this._state.isDueDate) {
+      // flatpickr есть смысл инициализировать только в случае,
+      // если поле выбора даты доступно для заполнения
+      this.#datepicker = flatpickr(
+        this.element.querySelector('.card__date'),
+        {
+          dateFormat: 'j F',
+          defaultDate: this._state.dateFrom,
+          onChange: this.#eventDateStartOnChangeHandler, // На событие flatpickr передаём наш колбэк
+        },
+      );
+    }
   };
 
   _restoreHandlers = () => {
