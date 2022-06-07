@@ -1,12 +1,13 @@
 import { DATE_HOURS_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view';
 import { getTimeDuration, humanizeTaskDueDate } from '../utils.js';
+import { getOffer } from '../mock/offers';
 
 const createTripPointViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, dateTo, isFavorite, offers, type } = point;
 
   const dateFromHumanize = dateFrom !== null
-    ? humanizeTaskDueDate(dateFrom)
+    ? humanizeTaskDueDate(dateFrom, )
     : '';
 
   const dateFromHumanizeHours = dateFrom !== null
@@ -27,8 +28,9 @@ const createTripPointViewTemplate = (point) => {
 
     let templateList = '';
 
-    offers.offers.forEach((element) => {
-      const { title, price } = element;
+    offers.forEach((id) => {
+      const offer = getOffer(id, type);
+      const { title, price } = offer;
       const template = `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       +€&nbsp;
@@ -90,6 +92,36 @@ export default class TripPointView extends AbstractView {
   get template() {
     return createTripPointViewTemplate(this.#point);
   }
+
+  // static parsePointToState = (point) => ({...point,
+  //   isDueDate: point.dueDate !== null,
+  //   isRepeating: isTaskRepeating(point.repeating),
+  // });
+
+  // static parseStateToPoint = (state) => {
+  //   const point = {...state};
+
+  //   if (!point.isDueDate) {
+  //     point.dueDate = null;
+  //   }
+
+  //   if (!point.isRepeating) {
+  //     point.repeating = {
+  //       mo: false,
+  //       tu: false,
+  //       we: false,
+  //       th: false,
+  //       fr: false,
+  //       sa: false,
+  //       su: false,
+  //     };
+  //   }
+
+  //   delete point.isDueDate;
+  //   delete point.isRepeating;
+
+  //   return point;
+  // };
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
