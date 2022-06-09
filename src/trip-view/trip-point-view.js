@@ -1,7 +1,7 @@
 import { DATE_HOURS_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view';
 import { getTimeDuration, humanizeTaskDueDate } from '../utils.js';
-import { getOffer } from '../mock/offers';
+import { getOfferById } from '../mock/offers';
 
 const createTripPointViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, dateTo, isFavorite, offers, type } = point;
@@ -29,7 +29,7 @@ const createTripPointViewTemplate = (point) => {
     let templateList = '';
 
     offers.forEach((id) => {
-      const offer = getOffer(id, type);
+      const offer = getOfferById(id, type);
       const { title, price } = offer;
       const template = `<li class="event__offer">
       <span class="event__offer-title">${title}</span>

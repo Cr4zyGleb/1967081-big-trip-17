@@ -1,12 +1,13 @@
-import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { CITIES, getDestination } from '../mock/cities';
-import { generateIdOffers, getOffer } from '../mock/offers';
-import { humanizeTaskDueDate } from '../utils.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { CITIES, getDestination } from '../mock/cities.js';
+import { generateIdOffers, getOfferByType } from '../mock/offers.js';
+import { addArrElement, deleteArrElement, humanizeTaskDueDate } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const createTripPointEditViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, offers, dateTo, type } = point;
+  const typeOffers = getOfferByType(type);
   const formatDate = 'DD/MM/YY HH:mm';
   const isDueDestination = destination !== null;
   const destinationName = isDueDestination ? destination.name : '';
@@ -33,21 +34,35 @@ const createTripPointEditViewTemplate = (point) => {
   </div>`;
   };
 
+  // const setOfferCheckedHandle = (title, id) => {
+  //   const offersElementId = `event-offer-${title}-${id}`;
+  //   const offersElement = document.querySelector(offersElementId);
+  //   offersElement.addEventListener('change', () => {
+  //     if (this.checked) {
+  //       offers.push(id);
+  //     } else {
+  //       offers = offers.filter((elemId) => elemId === id);
+  //     }
+  //   });
+  // };
+
   const getOffersTemplate = () => {
     let offersElements = '';
-    for (let i = 0; i < offers.length; i++) {
-      const offer = getOffer(offers[i], type);
+    for (let i = 0; i < typeOffers.offers.length; i++) {
+      const offer = typeOffers.offers[i];
       const offerId = offer.id;
       const offerTitle = offer.title;
       const offerPrice = offer.price;
+      const offerChecked = offers.includes(offerId) ? 'Checked' : '';
       const newOffersElements = `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitle}-${offerId}" type="checkbox" name="event-offer-${offerTitle}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitle}-${offerId}" data-offer-id = "${offerId}" type="checkbox" name="event-offer-${offerTitle}" ${offerChecked}>
       <label class="event__offer-label" for="event-offer-${offerTitle}-${offerId}">
         <span class="event__offer-title">Switch to ${offerTitle}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offerPrice}</span>
       </label>
     </div>`;
+      // setOfferCheckedHandle(offer.id);
       offersElements = offersElements + newOffersElements;
     }
     return `<section class="event__section  event__section--offers">
@@ -58,7 +73,7 @@ const createTripPointEditViewTemplate = (point) => {
   </section>`;
   };
 
-  const offersTemplate = offers.length ? getOffersTemplate() : '';
+  const offersTemplate = typeOffers.offers.length ? getOffersTemplate() : '';
   const photosTemplate = destinationPictures.length ? getPhotosTemplate() : '';
 
   const getDestinationTemplate = () => (
@@ -191,7 +206,8 @@ const createTripPointEditViewTemplate = (point) => {
 
 export default class TripPointEditView extends AbstractStatefulView {
 
-  #datepicker = null;
+  #dateFromPicker = null;
+  #dateToPicker = null;
   #point = null;
   constructor(point) {
     super();
@@ -205,6 +221,7 @@ export default class TripPointEditView extends AbstractStatefulView {
       ]
     };
     this.#setInnerHandlers();
+    this.#setDatePickers();
   }
 
   get template() {
@@ -229,8 +246,7 @@ export default class TripPointEditView extends AbstractStatefulView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this.#point = this._state;
-    this._callback.submit(this.#point);
+    this._callback.submit(this._state);
     // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
@@ -255,43 +271,83 @@ export default class TripPointEditView extends AbstractStatefulView {
     });
   };
 
-  #eventDateStartOnChangeHandler = (evt) => {
-    this.updateElement({
-      dateFrom: evt.target.value
-    });
-  };
-
-  #eventDateEndOnChangeHandler = (evt) => {
-    this.updateElement({
-      dateTo: evt.target.value
-    });
+  #eventOffersOnChangeHandler = (evt) => {
+    const offerId = Number(evt.target.dataset.offerId);
+    if (evt.target.checked) {
+      const newOffers = addArrElement(this._state.offers, offerId);
+      this.updateElement({
+        offers: newOffers
+      });
+    } else {
+      const newOffers = deleteArrElement(this._state.offers, offerId);
+      this.updateElement({
+        offers: newOffers
+      });
+    }
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeOnChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationOnChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceOnChangeHandler);
-    this.element.querySelector('#event-start-time-1').addEventListener('change', this.#eventDateStartOnChangeHandler);
-    this.element.querySelector('#event-end-time-1').addEventListener('change', this.#eventDateEndOnChangeHandler);
+    if (this._state.offers.length) {
+      this.element.querySelector('.event__section--offers').addEventListener('change', this.#eventOffersOnChangeHandler);
+    }
   };
 
-  #setDatepicker = () => {
-    if (this._state.isDueDate) {
-      // flatpickr есть смысл инициализировать только в случае,
-      // если поле выбора даты доступно для заполнения
-      this.#datepicker = flatpickr(
-        this.element.querySelector('.card__date'),
-        {
-          dateFormat: 'j F',
-          defaultDate: this._state.dateFrom,
-          onChange: this.#eventDateStartOnChangeHandler, // На событие flatpickr передаём наш колбэк
-        },
-      );
+  #setDatePickers = () => {
+    this.#dateFromPicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        // time_24hr: true,
+        dateFormat: 'd/m/y H/i',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dueDateFromChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
+    );
+
+    this.#dateToPicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        // time_24hr: true,
+        dateFormat: 'd/m/y H/i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#dueDateToChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
+    );
+  };
+
+  #dueDateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dueDateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#dateToPicker) {
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
+
+    if (this.#dateFromPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
     }
   };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatePickers();
     this.setSubmitHandler(this._callback.submit);
     this.setClickHandler(this._callback.click);
   };

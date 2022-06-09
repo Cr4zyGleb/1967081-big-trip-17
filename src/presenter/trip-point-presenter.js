@@ -31,13 +31,7 @@ export default class PointPresenter {
     this.#editPointView = new TripPointEditView(this.#point);
 
     this.restoreTripPointHandlers();
-    this.#editPointView.setClickHandler(this.#replaceFormToPoint);
-    this.#editPointView.setSubmitHandler((pointSubmit) => {
-      this.#changeData({ ...pointSubmit });
-      this.#replaceFormToPoint();
-    });
-
-
+    this.restoreTripPointEditHandlers();
     if (prevTripComponent === null) {
       render(this.#tripComponent, this.#tripListComponent.element);
       return;
@@ -59,7 +53,10 @@ export default class PointPresenter {
   };
 
   #replacePointToForm = () => {
+    this.#editPointView = new TripPointEditView(this.#point);
+    this.restoreTripPointEditHandlers();
     replace(this.#editPointView, this.#tripComponent);
+    remove(this.#tripComponent);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
@@ -69,6 +66,7 @@ export default class PointPresenter {
     this.restoreTripPointHandlers();
     replace(this.#tripComponent, this.#editPointView);
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
+    remove(this.#editPointView);
     this.#mode = Mode.DEFAULT;
   };
 
@@ -87,6 +85,14 @@ export default class PointPresenter {
     });
 
     this.#tripComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+  };
+
+  restoreTripPointEditHandlers = () => {
+    this.#editPointView.setClickHandler(this.#replaceFormToPoint);
+    this.#editPointView.setSubmitHandler((pointSubmit) => {
+      this.#changeData({ ...pointSubmit });
+      this.#replaceFormToPoint();
+    });
   };
 
   resetView = () => {
