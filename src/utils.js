@@ -87,13 +87,8 @@ const addArrElement = (arr, item) => {
 };
 
 const deleteArrElement = (arr, item) => {
-  let indexItem = null;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] === item) {
-      indexItem = i;
-    }
-  }
-  if (indexItem) {
+  const indexItem = arr.indexOf(item);
+  if (indexItem !== -1) {
     return [
       ...arr.slice(0, indexItem),
       ...arr.slice(indexItem + 1),

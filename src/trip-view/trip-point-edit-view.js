@@ -290,7 +290,8 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeOnChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationOnChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceOnChangeHandler);
-    if (this._state.offers.length) {
+    const typeOffers = getOfferByType(this._state.type);
+    if (typeOffers.offers.length) {
       this.element.querySelector('.event__section--offers').addEventListener('change', this.#eventOffersOnChangeHandler);
     }
   };
@@ -320,13 +321,13 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #dueDateFromChangeHandler = ([userDate]) => {
-    this.updateElement({
+    this._setState({
       dateFrom: userDate,
     });
   };
 
   #dueDateToChangeHandler = ([userDate]) => {
-    this.updateElement({
+    this._setState({
       dateTo: userDate,
     });
   };
