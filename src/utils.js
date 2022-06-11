@@ -79,6 +79,25 @@ const updateItem = (items, update) => {
   ];
 };
 
+const addArrElement = (arr, item) => {
+  if (!arr.includes(item)) {
+    arr.push(item);
+  }
+  return arr;
+};
+
+const deleteArrElement = (arr, item) => {
+  const indexItem = arr.indexOf(item);
+  if (indexItem !== -1) {
+    return [
+      ...arr.slice(0, indexItem),
+      ...arr.slice(indexItem + 1),
+    ];
+  }
+
+  return arr;
+};
+
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -111,4 +130,4 @@ const sortTaskPrice = (taskA, taskB) => (taskA.basePrice - taskB.basePrice);
 const getRandomDayFromTo = () => DAYS[getRandomInteger(0,DAYS.length-1)];
 
 
-export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice };
+export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice, addArrElement, deleteArrElement };

@@ -1,3 +1,5 @@
+import { getRandomInteger } from '../utils.js';
+
 const OFFERS = [
   {
     type: 'taxi',
@@ -195,7 +197,12 @@ const OFFERS = [
   },
 ];
 
-const getOffer  = (id, type) => {
+const getOfferByType  = (type) => {
+  const offerByType = OFFERS.find((item) => item.type === type);
+  return offerByType;
+};
+
+const getOfferById  = (id, type) => {
   const offerByType = OFFERS.find((item) => item.type === type);
   const offer = offerByType.offers.find((item) => item.id === id);
   return offer;
@@ -205,9 +212,12 @@ const generateIdOffers = (type) => {
   const offers = OFFERS.find((item) => item.type === type);
   const idOffers = [];
   for (let i = 0; i < offers.offers.length; i++){
-    idOffers.push(offers.offers[i].id);
+    const randomInteger = getRandomInteger(0,1);
+    if (randomInteger) {
+      idOffers.push(offers.offers[i].id);
+    }
   }
   return idOffers;
 };
 
-export { OFFERS, getOffer, generateIdOffers };
+export { OFFERS, getOfferById, getOfferByType, generateIdOffers };
