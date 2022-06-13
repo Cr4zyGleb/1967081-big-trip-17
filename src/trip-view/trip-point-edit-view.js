@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { CITIES, getDestination } from '../mock/cities.js';
 import { generateIdOffers, getOfferByType } from '../mock/offers.js';
-import { addArrElement, deleteArrElement, humanizeTaskDueDate } from '../utils.js';
+import { addArrElement, deleteArrElement, humanizeTaskDueDate } from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -244,9 +244,20 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   };
 
+  setDeleteHandler = (callback) => {
+    this._callback.delete = callback;
+    this.element.querySelector('.event--edit').addEventListener('reset', this.#deleteHandler);
+  };
+
   #submitHandler = (evt) => {
     evt.preventDefault();
     this._callback.submit(this._state);
+    // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
+  };
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.delete(this._state);
     // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
@@ -266,7 +277,7 @@ export default class TripPointEditView extends AbstractStatefulView {
   };
 
   #eventPriceOnChangeHandler = (evt) => {
-    this.updateElement({
+    this._setState({
       basePrice: evt.target.value
     });
   };
@@ -275,12 +286,12 @@ export default class TripPointEditView extends AbstractStatefulView {
     const offerId = Number(evt.target.dataset.offerId);
     if (evt.target.checked) {
       const newOffers = addArrElement(this._state.offers, offerId);
-      this.updateElement({
+      this._setState({
         offers: newOffers
       });
     } else {
       const newOffers = deleteArrElement(this._state.offers, offerId);
-      this.updateElement({
+      this._setState({
         offers: newOffers
       });
     }

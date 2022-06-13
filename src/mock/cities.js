@@ -1,4 +1,4 @@
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/utils.js';
 
 const CITIES = ['Tokio', 'New York', 'Peking', 'Seoul', 'Toronto', 'St-peterburg'];
 

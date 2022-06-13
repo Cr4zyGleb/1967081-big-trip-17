@@ -1,5 +1,6 @@
 import { remove, replace } from '../framework/render';
 import { render } from '../render';
+import { UserAction, UpdateType } from '../const.js';
 import TripPointEditView from '../trip-view/trip-point-edit-view';
 import TripPointView from '../trip-view/trip-point-view';
 
@@ -49,7 +50,24 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
+  };
+
+  #handleSubmitClick = () => {
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MAJOR,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
+  };
+
+  #handleDeleteClick = () => {
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
   #replacePointToForm = () => {
@@ -90,7 +108,17 @@ export default class PointPresenter {
   restoreTripPointEditHandlers = () => {
     this.#editPointView.setClickHandler(this.#replaceFormToPoint);
     this.#editPointView.setSubmitHandler((pointSubmit) => {
-      this.#changeData({ ...pointSubmit });
+      this.#changeData(
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
+        { ...pointSubmit });
+      this.#replaceFormToPoint();
+    });
+    this.#editPointView.setDeleteHandler((pointSubmit) => {
+      this.#changeData(
+        UserAction.DELETE_TASK,
+        UpdateType.MINOR,
+        { ...pointSubmit });
       this.#replaceFormToPoint();
     });
   };

@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { getRandomDayFromTo, getRandomInteger } from '../utils.js';
+import { getRandomDayFromTo, getRandomInteger } from '../utils/utils.js';
 import { generateDestination } from './cities.js';
 import { generateIdOffers } from './offers.js';
 

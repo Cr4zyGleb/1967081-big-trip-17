@@ -1,16 +1,19 @@
-import {render} from './render.js';
-import TripFilterView from './trip-view/trip-filter-view.js';
-import TripPresenter from './presenter/trip-presenter.js';
-import PointsModel from './model/trip-model.js';
-
+import FilterPresenter from './presenter/filter-presenter.js';
+import BoardPresenter from './presenter/board-presenter.js';
+import PointsModel from './model/points-model.js';
+import FiltersModel from './model/filters-model.js';
 
 const siteTripMainElement = document.querySelector('.trip-main');
 const siteTripControlFiltersElement = siteTripMainElement.querySelector('.trip-controls__filters');
 const siteMainElement = document.querySelector('.page-main');
 const siteHeaderElement = siteMainElement.querySelector('.trip-events');
 const pointsModel = new PointsModel();
-const tripPresenter = new TripPresenter();
-render(new TripFilterView(pointsModel.points), siteTripControlFiltersElement);
+const filtersModel = new FiltersModel();
+const boardPresenter = new BoardPresenter(siteHeaderElement, pointsModel, filtersModel);
+const filterPresenter = new FilterPresenter(siteTripControlFiltersElement, filtersModel, pointsModel);
 
-tripPresenter.init(siteHeaderElement, pointsModel);
+// render(new TripFilterView(pointsModel.points), siteTripControlFiltersElement);
+
+filterPresenter.init();
+boardPresenter.init();
 
