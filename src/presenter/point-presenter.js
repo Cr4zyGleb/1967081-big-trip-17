@@ -20,18 +20,22 @@ export default class PointPresenter {
   #changeMode = null;
   #pointsModel = null;
   #mode = Mode.DEFAULT;
+  #destroyCallback = null;
+
   constructor(tripListComponent, changeData, changeMode, pointsModel) {
     this.#tripListComponent = tripListComponent;
     this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+
   }
 
-  init = (point) => {
+  init = (point, callback) => {
+    this.#destroyCallback = callback;
     this.#point = point;
     const prevTripComponent = this.#tripComponent;
     const prevEditPointView = this.#editPointView;
-    this.#tripComponent = new TripPointView(this.#point);
+    this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
     this.#editPointView = new TripPointEditView(this.#point);
     this.restoreTripPointHandlers();
     this.restoreTripPointEditHandlers();
@@ -99,11 +103,12 @@ export default class PointPresenter {
   // };
 
   #replaceFormToPoint = () => {
-    this.#tripComponent = new TripPointView(this.#point);
+    this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
     this.restoreTripPointHandlers();
     replace(this.#tripComponent, this.#editPointView);
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
     remove(this.#editPointView);
+    this.#destroyCallback?.();
     this.#mode = Mode.DEFAULT;
   };
 

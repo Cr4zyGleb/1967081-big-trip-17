@@ -59,10 +59,10 @@ export default class BoardPresenter {
     this.#renderBoard({ renderAll: true });
   };
 
-  addNewPoint() {
+  addNewPoint(callback) {
     this.#resetView();
     this.newPointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
-    this.newPointPresenter.init(getNewPoint());
+    this.newPointPresenter.init(getNewPoint(), callback);
   }
 
   #renderBoard = ({ renderAll = false } = {}) => {
@@ -106,7 +106,7 @@ export default class BoardPresenter {
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -198,16 +198,16 @@ export default class BoardPresenter {
     // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#pointsModel.updateTask(updateType, update);
+        this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_TASK:
         this.#currentSortType = SortType.DATE;
         // this.#sortComponent = new TripSortView(SortType.DATE);
         this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-        this.#pointsModel.addTask(updateType, update);
+        this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_TASK:
-        this.#pointsModel.deleteTask(updateType, update);
+        this.#pointsModel.deletePoint(updateType, update);
         break;
     }
   };
@@ -229,6 +229,10 @@ export default class BoardPresenter {
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
+        this.#clearBoard({ clearAll: true });
+        this.#renderBoard({ renderAll: true });
+        break;
+      case UpdateType.INIT:
         this.#clearBoard({ clearAll: true });
         this.#renderBoard({ renderAll: true });
         break;
