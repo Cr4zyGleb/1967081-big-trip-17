@@ -1,5 +1,6 @@
+import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { getRandomDayFromTo, getRandomInteger } from '../utils.js';
+import { getRandomDayFromTo, getRandomInteger, humanizeTaskDueDate } from '../utils/utils.js';
 import { generateDestination } from './cities.js';
 import { generateIdOffers } from './offers.js';
 
@@ -22,6 +23,43 @@ export const generatePoint = () => {
     isFavorite: false,
     type: type,
     offers: idOffers
+  };
+
+  return point;
+};
+
+
+export const getNewPoint = () => {
+  const formatDate = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+  const dateFrom = dayjs();
+  const dateTo = dayjs().add(1, 'hour');
+  const dateFromHumanize = dateFrom !== null
+    ? humanizeTaskDueDate(dateFrom, formatDate)
+    : '';
+
+  const dateToHumanize = dateTo !== null
+    ? humanizeTaskDueDate(dateTo, formatDate)
+    : '';
+  const type = TYPES[0];
+  // const idOffers = generateIdOffers(type);
+  const point = {
+    isNew: true,
+    destination: {
+      name : 'Tokio',
+      description : 'description Tokio',
+      pictures: [
+        // generatePicture('Tokio'),
+        // generatePicture('Tokio'),
+        // generatePicture('Tokio')
+      ]
+    },
+    basePrice: 100,
+    id: nanoid(),
+    dateFrom: dateFromHumanize,
+    dateTo: dateToHumanize,
+    isFavorite: false,
+    type: type,
+    offers: []
   };
 
   return point;
