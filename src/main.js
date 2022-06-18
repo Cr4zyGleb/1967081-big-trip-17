@@ -4,7 +4,7 @@ import PointsModel from './model/points-model.js';
 import FiltersModel from './model/filters-model.js';
 import PointsApiService from './points-api-service.js';
 import NewPointButtonView from './trip-view/new-point-button-view.js';
-import { render, RenderPosition } from './render.js';
+import { render } from './render.js';
 
 const AUTHORIZATION = 'Basic wdeqdq12321qdwd';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip/';
