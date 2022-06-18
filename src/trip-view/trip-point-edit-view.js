@@ -7,6 +7,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const createTripPointEditViewTemplate = (point) => {
   const { destination, basePrice, dateFrom, offers, dateTo, type } = point;
+  const isNew = point.isNew;
   const typeOffers = getOfferByType(type);
   const formatDate = 'DD/MM/YY HH:mm';
   const isDueDestination = destination !== null;
@@ -73,6 +74,13 @@ const createTripPointEditViewTemplate = (point) => {
   </section>`;
   };
 
+  const getRollUpBtnTemplate = () => (
+    `<button hidden class="event__rollup-btn visually-hidden" type="button">
+      <span hidden class="visually-hidden">Open event</span>
+    </button>`
+  );
+
+  const rollUpBtnTemplate = isNew ? '' : getRollUpBtnTemplate();
   const offersTemplate = typeOffers.offers.length ? getOffersTemplate() : '';
   const photosTemplate = destinationPictures.length ? getPhotosTemplate() : '';
 
@@ -184,14 +192,12 @@ const createTripPointEditViewTemplate = (point) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
+    <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
+    ${rollUpBtnTemplate}
   </header>
   <section class="event__details">
     
@@ -209,6 +215,7 @@ export default class TripPointEditView extends AbstractStatefulView {
   #dateFromPicker = null;
   #dateToPicker = null;
   #point = null;
+  #isNew = null;
   constructor(point) {
     super();
     this._state = {
@@ -222,6 +229,7 @@ export default class TripPointEditView extends AbstractStatefulView {
     };
     this.#setInnerHandlers();
     this.#setDatePickers();
+    this.#isNew = point.isNew;
   }
 
   get template() {
@@ -270,9 +278,14 @@ export default class TripPointEditView extends AbstractStatefulView {
 
   #eventDestinationOnChangeHandler = (evt) => {
     if (evt.target.value) {
-      this.updateElement({
-        destination: getDestination(evt.target.value)
-      });
+      const value = getDestination(evt.target.value);
+      if (value) {
+        this.updateElement({
+          destination: value
+        });
+      } else {
+        evt.target.value = this._state.destination.name;
+      }
     }
   };
 
@@ -361,7 +374,9 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.#setDatePickers();
     this.setSubmitHandler(this._callback.submit);
-    this.setClickHandler(this._callback.click);
+    if (this.#isNew) {
+      this.setClickHandler(this._callback.click);
+    }
   };
 
 }

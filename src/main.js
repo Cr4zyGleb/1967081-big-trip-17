@@ -14,6 +14,10 @@ const filterPresenter = new FilterPresenter(siteTripControlFiltersElement, filte
 
 // render(new TripFilterView(pointsModel.points), siteTripControlFiltersElement);
 
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', () => {
+  boardPresenter.addNewPoint();
+});
+
 filterPresenter.init();
 boardPresenter.init();
 

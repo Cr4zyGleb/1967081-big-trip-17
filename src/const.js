@@ -23,6 +23,12 @@ const FilterType = {
   FUTURE: 'future'
 };
 
+const EmptyListMessage = {
+  EVERYTHING : 'Click New Event to create your first point',
+  PAST : 'There are no past events now',
+  FUTURE : 'There are no future events now'
+};
+
 const DATE_HOURS_FORMAT = 'HH:mm';
 
-export { SortType, DATE_HOURS_FORMAT, UserAction, UpdateType, FilterType };
+export { SortType, DATE_HOURS_FORMAT, UserAction, UpdateType, FilterType, EmptyListMessage };

@@ -3,19 +3,20 @@ import TripSortView from '../trip-view/trip-sort-view.js';
 import TripListView from '../trip-view/trip-list-view.js';
 import TripEmptyListView from '../trip-view/trip-empty-list-view.js';
 import PointPresenter from './point-presenter.js';
-import { sortTaskDate, sortTaskPrice, sortTaskTime, updateItem } from '../utils/utils.js';
-import { FilterType, SortType, UpdateType, UserAction } from '../const.js';
+import { sortTaskDate, sortTaskPrice, sortTaskTime } from '../utils/utils.js';
+import { EmptyListMessage, FilterType, SortType, UpdateType, UserAction } from '../const.js';
 import { remove } from '../framework/render.js';
 import { getFilteredPoints } from '../utils/filters.js';
+import { getNewPoint } from '../mock/trip.js';
 
 export default class BoardPresenter {
   #pointsModel = null;
   #fitersModel = null;
   #currentSortType = null;
-  #currentFilterType = null;
-  #previousSortType = null;
+  // #previousSortType = null;
   #pageTripEventsElement = null;
   #tripListComponent = null;
+  #tripEmptyListComponent = null;
   #sortComponent = null;
   #pointPresenter = new Map();
 
@@ -24,7 +25,6 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#fitersModel = fitersModel;
     this.#currentSortType = SortType.DATE;
-    this.#currentFilterType = FilterType.EVERYTHING;
     this.#sortComponent = new TripSortView(SortType.DATE);
     this.#tripListComponent = new TripListView();
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -59,9 +59,17 @@ export default class BoardPresenter {
     this.#renderBoard({ renderAll: true });
   };
 
+  addNewPoint() {
+    this.#resetView();
+    this.newPointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
+    this.newPointPresenter.init(getNewPoint());
+  }
+
   #renderBoard = ({ renderAll = false } = {}) => {
     if (this.points.length) {
       if (renderAll) {
+        this.#sortComponent = new TripSortView(this.#currentSortType);
+        render(this.#sortComponent, this.#pageTripEventsElement);
         this.#renderTripSortView(this.#currentSortType);
         this.#renderTripListComponent();
       }
@@ -77,9 +85,21 @@ export default class BoardPresenter {
     if (clearAll) {
       remove(this.#sortComponent);
       remove(this.#tripListComponent);
-      this.#previousSortType = null;
+      if (this.#tripEmptyListComponent) {
+        remove(this.#tripEmptyListComponent);
+      }
     }
   };
+
+  // #createPoint = () => {
+  //   // trip-main__event-add-btn
+  //   this.#currentSortType = SortType.DATE;
+  //   this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+  //   this.#handleViewAction(
+  //     UserAction.ADD_TASK,
+  //     UpdateType.MAJOR,
+  //     { ...getNewPoint() });
+  // };
 
   renderPoint = (point) => {
     this.#renderPoint(point);
@@ -96,19 +116,30 @@ export default class BoardPresenter {
   };
 
   #renderTripSortView = (sortType) => {
-    if (!this.#previousSortType) {
-      render(this.#sortComponent, this.#pageTripEventsElement);
-    } else {
-      const newSortComponent = new TripSortView(sortType);
-      replace(newSortComponent, this.#sortComponent);
-      this.#sortComponent = newSortComponent;
-    }
+    const newSortComponent = new TripSortView(sortType);
+    replace(newSortComponent, this.#sortComponent);
+    this.#sortComponent = newSortComponent;
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    this.#previousSortType = sortType;
+  };
+
+  getMessageForEmptyListView = () => {
+    if (this.#fitersModel.filter === FilterType.EVERYTHING) {
+      return EmptyListMessage.EVERYTHING;
+    }
+    if (this.#fitersModel.filter === FilterType.PAST) {
+      return EmptyListMessage.PAST;
+    }
+    if (this.#fitersModel.filter === FilterType.FUTURE) {
+      return EmptyListMessage.FUTURE;
+    }
+
+    return EmptyListMessage.EVERYTHING;
   };
 
   #renderTripEmptyListView = () => {
-    render(new TripEmptyListView('Click New Event to create your first point'), this.#pageTripEventsElement);
+    const message = this.getMessageForEmptyListView();
+    this.#tripEmptyListComponent = new TripEmptyListView(message);
+    render(this.#tripEmptyListComponent, this.#pageTripEventsElement);
   };
 
   #renderTripListComponent = () => {
@@ -121,30 +152,34 @@ export default class BoardPresenter {
     this.#pointPresenter.clear();
   };
 
-  #handlePointChange = (updatedPoint) => {
-    this.points = updateItem(this.points, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
-  };
+  // #handlePointChange = (updatedPoint) => {
+  //   this.points = updateItem(this.points, updatedPoint);
+  //   this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  // };
 
-  #handleModeChange = () => {
+  #resetView = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #sortPoints = (sortType) => {
-    switch (sortType) {
-      case SortType.PRICE:
-        this.points.sort(sortTaskPrice);
-        break;
-      case SortType.TIME:
-        this.points.sort(sortTaskTime);
-        break;
-      default:
-        this.points.sort(sortTaskDate);
-        break;
-    }
-    this.#currentSortType = sortType;
-
+  #handleModeChange = () => {
+    this.#resetView();
   };
+
+  // #sortPoints = (sortType) => {
+  //   switch (sortType) {
+  //     case SortType.PRICE:
+  //       this.points.sort(sortTaskPrice);
+  //       break;
+  //     case SortType.TIME:
+  //       this.points.sort(sortTaskTime);
+  //       break;
+  //     default:
+  //       this.points.sort(sortTaskDate);
+  //       break;
+  //   }
+  //   this.#currentSortType = sortType;
+
+  // };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType || sortType === SortType.DISABLED) {
@@ -166,6 +201,9 @@ export default class BoardPresenter {
         this.#pointsModel.updateTask(updateType, update);
         break;
       case UserAction.ADD_TASK:
+        this.#currentSortType = SortType.DATE;
+        // this.#sortComponent = new TripSortView(SortType.DATE);
+        this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         this.#pointsModel.addTask(updateType, update);
         break;
       case UserAction.DELETE_TASK:
