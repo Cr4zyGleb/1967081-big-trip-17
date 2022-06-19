@@ -202,8 +202,8 @@ const getOfferByType  = (type) => {
   return offerByType;
 };
 
-const getOfferById  = (id, type) => {
-  const offerByType = OFFERS.find((item) => item.type === type);
+const getOfferById  = (id, type, pointsModel) => {
+  const offerByType = pointsModel.offers.find((item) => item.type === type);
   const offer = offerByType.offers.find((item) => item.id === id);
   return offer;
 };

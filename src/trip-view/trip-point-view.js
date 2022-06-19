@@ -3,7 +3,7 @@ import AbstractView from '../framework/view/abstract-view';
 import { getTimeDuration, humanizeTaskDueDate } from '../utils/utils.js';
 import { getOfferById } from '../mock/offers';
 
-const createTripPointViewTemplate = (point) => {
+const createTripPointViewTemplate = (point, pointsModel) => {
   const { destination, basePrice, dateFrom, dateTo, isFavorite, offers, type } = point;
 
   const dateFromHumanize = dateFrom !== null
@@ -29,7 +29,7 @@ const createTripPointViewTemplate = (point) => {
     let templateList = '';
 
     offers.forEach((id) => {
-      const offer = getOfferById(id, type);
+      const offer = getOfferById(id, type, pointsModel);
       const { title, price } = offer;
       const template = `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
@@ -82,15 +82,16 @@ const createTripPointViewTemplate = (point) => {
 export default class TripPointView extends AbstractView {
 
   #point = null;
-  #element = null;
+  #pointsModel = null;
 
-  constructor(point) {
+  constructor(point, pointsModel) {
     super();
     this.#point = point;
+    this.#pointsModel = pointsModel;
   }
 
   get template() {
-    return createTripPointViewTemplate(this.#point);
+    return createTripPointViewTemplate(this.#point, this.#pointsModel);
   }
 
   // static parsePointToState = (point) => ({...point,
