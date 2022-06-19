@@ -43,7 +43,6 @@ export default class PointPresenter {
     const place = point.isNew ? RenderPosition.AFTERBEGIN : RenderPosition.BEFOREEND;
 
     if (point.isNew) {
-      // replace(this.#editPointView, prevEditPointView, place);
       render(this.#editPointView, this.#tripListComponent.element, place);
       return;
     }
@@ -71,20 +70,6 @@ export default class PointPresenter {
       { ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
-  // #handleSubmitClick = () => {
-  //   this.#changeData(
-  //     UserAction.UPDATE_TASK,
-  //     UpdateType.MAJOR,
-  //     { ...this.#point, isFavorite: !this.#point.isFavorite });
-  // };
-
-  // #handleDeleteClick = () => {
-  //   this.#changeData(
-  //     UserAction.UPDATE_TASK,
-  //     UpdateType.MINOR,
-  //     { ...this.#point, isFavorite: !this.#point.isFavorite });
-  // };
-
   #replacePointToForm = () => {
     this.#changeMode();
     this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
@@ -93,15 +78,6 @@ export default class PointPresenter {
     remove(this.#tripComponent);
     this.#mode = Mode.EDITING;
   };
-
-  // #createPoint = () => {
-  //   this.#editPointView = new TripPointEditView(this.#point);
-  //   this.restoreTripPointEditHandlers();
-  //   replace(this.#editPointView, this.#tripComponent);
-  //   remove(this.#tripComponent);
-  //   this.#changeMode();
-  //   this.#mode = Mode.CREATING;
-  // };
 
   #replaceFormToPoint = () => {
     this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
@@ -141,7 +117,6 @@ export default class PointPresenter {
         userAction,
         updateType,
         { ...pointSubmit, isNew: false });
-      // this.#replaceFormToPoint();
     });
     this.#editPointView.setDeleteHandler((pointSubmit) => {
       if (!pointSubmit.isNew) {
@@ -151,7 +126,7 @@ export default class PointPresenter {
           { ...pointSubmit });
         this.#replaceFormToPoint();
       } else {
-        this.#newPointButtonComponent.element.disabled = false;
+        this.#newPointButtonComponent.setAvailability(true);
         remove(this.#editPointView);
       }
     });
@@ -160,12 +135,10 @@ export default class PointPresenter {
 
   setSaving = () => {
     this.#editPointView.updateElement({ isSaving: true, isDeleting: false });
-    // this.restoreTripPointEditHandlers();
   };
 
   setDeleting = () => {
     this.#editPointView.updateElement({ isDeleting: true, isSaving: false });
-    // this.restoreTripPointEditHandlers();
   };
 
   setAborting = () => {

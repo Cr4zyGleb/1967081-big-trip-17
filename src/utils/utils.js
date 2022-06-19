@@ -1,47 +1,5 @@
 import dayjs from 'dayjs';
 
-const DAYS = [
-  {
-    from: '2022-07-10T22:55:56.845Z',
-    to: '2022-08-10T22:55:56.845Z'
-  },
-  {
-    from: '2022-08-02T22:55:56.845Z',
-    to: '2022-08-15T23:55:56.845Z'
-  },
-  {
-    from: '2022-05-10T10:55:56.845Z',
-    to: '2022-05-11T10:58:56.845Z'
-  },
-  {
-    from: '2022-07-10T22:55:56.845Z',
-    to: '2022-09-13T08:55:56.845Z'
-  },
-  {
-    from: '2022-04-10T22:55:56.845Z',
-    to: '2022-04-10T23:55:56.845Z'
-  },
-  {
-    from: '2022-02-10T22:55:56.845Z',
-    to: '2022-02-10T22:56:56.845Z'
-  },
-  {
-    from: '2022-03-10T22:55:56.845Z',
-    to: '2022-03-10T22:56:56.845Z'
-  },
-  {
-    from: '2022-09-10T22:55:56.845Z',
-    to: '2022-09-10T22:56:56.845Z'
-  }
-  ,
-  {
-    from: '2022-01-10T22:55:56.845Z',
-    to: '2022-01-10T22:56:56.845Z'
-  }
-];
-
-// Функция из интернета по генерации случайного числа из диапазона
-// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -132,7 +90,4 @@ const sortTaskTime = (taskA, taskB) => {
 
 const sortTaskPrice = (taskA, taskB) => (taskA.basePrice - taskB.basePrice);
 
-const getRandomDayFromTo = () => DAYS[getRandomInteger(0,DAYS.length-1)];
-
-
-export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, getRandomDayFromTo, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice, addArrElement, deleteArrElement };
+export { getRandomInteger, humanizeTaskDueDate, getTimeDuration, updateItem, sortTaskDate, sortTaskTime, sortTaskPrice, addArrElement, deleteArrElement };
