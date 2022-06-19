@@ -19,6 +19,7 @@ const boardPresenter = new BoardPresenter(siteHeaderElement, pointsModel, filter
 const filterPresenter = new FilterPresenter(siteTripControlFiltersElement, filtersModel, pointsModel);
 const newPointButtonComponent = new NewPointButtonView();
 
+
 const handleNewPointFormClose = () => {
   newPointButtonComponent.element.disabled = false;
 };
