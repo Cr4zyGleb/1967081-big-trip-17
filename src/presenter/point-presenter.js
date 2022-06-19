@@ -21,13 +21,14 @@ export default class PointPresenter {
   #pointsModel = null;
   #mode = Mode.DEFAULT;
   #destroyCallback = null;
+  #newPointButtonComponent = null;
 
-  constructor(tripListComponent, changeData, changeMode, pointsModel) {
+  constructor(tripListComponent, changeData, changeMode, pointsModel, newPointButtonComponent) {
     this.#tripListComponent = tripListComponent;
     this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-
+    this.#newPointButtonComponent = newPointButtonComponent;
   }
 
   init = (point, callback) => {
@@ -36,7 +37,7 @@ export default class PointPresenter {
     const prevTripComponent = this.#tripComponent;
     const prevEditPointView = this.#editPointView;
     this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
-    this.#editPointView = new TripPointEditView(this.#point);
+    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
     this.restoreTripPointHandlers();
     this.restoreTripPointEditHandlers();
     const place = point.isNew ? RenderPosition.AFTERBEGIN : RenderPosition.BEFOREEND;
@@ -85,7 +86,7 @@ export default class PointPresenter {
   // };
 
   #replacePointToForm = () => {
-    this.#editPointView = new TripPointEditView(this.#point);
+    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
     this.restoreTripPointEditHandlers();
     replace(this.#editPointView, this.#tripComponent);
     remove(this.#tripComponent);
@@ -150,10 +151,40 @@ export default class PointPresenter {
           { ...pointSubmit });
         this.#replaceFormToPoint();
       } else {
+        this.#newPointButtonComponent.element.disabled = false;
         remove(this.#editPointView);
       }
     });
 
+  };
+
+  setSaving = () => {
+    // if(this.#mode === Mode.EDITING){
+    this.#editPointView.updateElement({ isSaving: true, isDeleting: false});
+    // }
+  };
+
+  setDeleting = () => {
+    // if(this.#mode === Mode.EDITING){
+    this.#editPointView.updateElement({ isDeleting: true, isSaving: false});
+    // }
+  };
+
+  setAborting = () => {
+    // if (this.#mode === Mode.DEFAULT) {
+    this.#editPointView.shake();
+    // this.#pointComponent.shake();
+    // return;
+    //}
+
+    const resetFormState = () => {
+      this.#editPointView.updateElement({
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointView.shake(resetFormState);
   };
 
   resetView = () => {

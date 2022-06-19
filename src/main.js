@@ -15,9 +15,9 @@ const siteHeaderElement = siteMainElement.querySelector('.trip-events');
 const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel(pointsApiService);
 const filtersModel = new FiltersModel();
-const boardPresenter = new BoardPresenter(siteHeaderElement, pointsModel, filtersModel);
-const filterPresenter = new FilterPresenter(siteTripControlFiltersElement, filtersModel, pointsModel);
 const newPointButtonComponent = new NewPointButtonView();
+const boardPresenter = new BoardPresenter(siteHeaderElement, pointsModel, filtersModel, newPointButtonComponent);
+const filterPresenter = new FilterPresenter(siteTripControlFiltersElement, filtersModel, pointsModel);
 
 
 const handleNewPointFormClose = () => {

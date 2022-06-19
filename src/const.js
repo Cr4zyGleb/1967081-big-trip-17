@@ -1,3 +1,5 @@
+const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 const SortType = {
   DATE: 'DATE',
   PRICE: 'PRICE',
@@ -32,4 +34,4 @@ const EmptyListMessage = {
 
 const DATE_HOURS_FORMAT = 'HH:mm';
 
-export { SortType, DATE_HOURS_FORMAT, UserAction, UpdateType, FilterType, EmptyListMessage };
+export { SortType, DATE_HOURS_FORMAT, UserAction, UpdateType, FilterType, EmptyListMessage, TYPES };
