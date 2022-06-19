@@ -70,6 +70,7 @@ export default class BoardPresenter {
     this.#resetView();
     this.#newPointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel, this.#newPointButtonComponent);
     this.#newPointPresenter.init(getNewPoint(this.#pointsModel), callback);
+    this.#newPointButtonComponent.disabled = true;
   }
 
   #renderBoard = ({ renderAll = false } = {}) => {
@@ -98,22 +99,12 @@ export default class BoardPresenter {
     }
   };
 
-  // #createPoint = () => {
-  //   // trip-main__event-add-btn
-  //   this.#currentSortType = SortType.DATE;
-  //   this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-  //   this.#handleViewAction(
-  //     UserAction.ADD_TASK,
-  //     UpdateType.MAJOR,
-  //     { ...getNewPoint() });
-  // };
-
   renderPoint = (point) => {
     this.#renderPoint(point);
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel, this.#newPointButtonComponent);
+    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -151,18 +142,12 @@ export default class BoardPresenter {
 
   #renderTripListComponent = () => {
     render(this.#tripListComponent, this.#pageTripEventsElement);
-    // this.#renderPoints(this.points);
   };
 
   #clearPointList = () => {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
   };
-
-  // #handlePointChange = (updatedPoint) => {
-  //   this.points = updateItem(this.points, updatedPoint);
-  //   this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
-  // };
 
   #resetView = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
@@ -171,22 +156,6 @@ export default class BoardPresenter {
   #handleModeChange = () => {
     this.#resetView();
   };
-
-  // #sortPoints = (sortType) => {
-  //   switch (sortType) {
-  //     case SortType.PRICE:
-  //       this.points.sort(sortTaskPrice);
-  //       break;
-  //     case SortType.TIME:
-  //       this.points.sort(sortTaskTime);
-  //       break;
-  //     default:
-  //       this.points.sort(sortTaskDate);
-  //       break;
-  //   }
-  //   this.#currentSortType = sortType;
-
-  // };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType || sortType === SortType.DISABLED) {
@@ -199,10 +168,6 @@ export default class BoardPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
     this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_TASK:
@@ -219,8 +184,8 @@ export default class BoardPresenter {
 
         try {
           await this.#pointsModel.addPoint(updateType, update);
+          this.#newPointButtonComponent.setAvailability(true);
           this.#currentSortType = SortType.DATE;
-          // this.#sortComponent = new TripSortView(SortType.DATE);
           this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         }
         catch (error) {
@@ -231,8 +196,8 @@ export default class BoardPresenter {
         this.#pointPresenter.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
+          this.#newPointButtonComponent.setAvailability(false);
           this.#currentSortType = SortType.DATE;
-          // this.#sortComponent = new TripSortView(SortType.DATE);
           this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         }
         catch (error) {
@@ -244,22 +209,16 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#pointPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
         this.#clearBoard();
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({ clearAll: true });
         this.#renderBoard({ renderAll: true });
         break;

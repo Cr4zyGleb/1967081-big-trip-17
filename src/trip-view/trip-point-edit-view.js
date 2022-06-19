@@ -6,6 +6,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const createTripPointEditViewTemplate = (point, pointsModel) => {
   const { destination, basePrice, dateFrom, offers, dateTo, type } = point;
+  const saveButtonText = point.isSaving ? 'Saving...' : 'Save';
   const isNew = point.isNew;
   const typeOffers = getOfferByType(type, pointsModel);
   const formatDate = 'DD/MM/YY HH:mm';
@@ -20,6 +21,13 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
     ? humanizeTaskDueDate(dateTo, formatDate)
     : '';
 
+  const getDeleteButtonText = () => {
+    if (isNew) {
+      return 'Cancel';
+    }
+    return point.isDeleting ? 'Deleting...' : 'Delete';
+  };
+
   const getPhotosTemplate = () => {
     let photosImgElements = '';
     for (let i = 0; i < destinationPictures.length; i++) {
@@ -32,18 +40,6 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
     </div>
   </div>`;
   };
-
-  // const setOfferCheckedHandle = (title, id) => {
-  //   const offersElementId = `event-offer-${title}-${id}`;
-  //   const offersElement = document.querySelector(offersElementId);
-  //   offersElement.addEventListener('change', () => {
-  //     if (this.checked) {
-  //       offers.push(id);
-  //     } else {
-  //       offers = offers.filter((elemId) => elemId === id);
-  //     }
-  //   });
-  // };
 
   const getOffersTemplate = () => {
     let offersElements = '';
@@ -61,7 +57,6 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
         <span class="event__offer-price">${offerPrice}</span>
       </label>
     </div>`;
-      // setOfferCheckedHandle(offer.id);
       offersElements = offersElements + newOffersElements;
     }
     return `<section class="event__section  event__section--offers">
@@ -81,7 +76,6 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
   const rollUpBtnTemplate = isNew ? '' : getRollUpBtnTemplate();
   const offersTemplate = typeOffers.offers.length ? getOffersTemplate() : '';
   const photosTemplate = (destinationPictures && destinationPictures.length) ? getPhotosTemplate() : '';
-
 
   const getDestinationTemplate = () => (
     `<section class="event__section  event__section--destination">
@@ -106,8 +100,6 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
   };
 
   const destinationListTemplate = getDestinationListTemplate();
-
-  // const eventDuration = getTimeDuration(dateFrom, dateTo);
 
   return (`<li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
@@ -195,8 +187,8 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
       <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">${isNew ? 'Cancel' : 'Delete'}</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+    <button class="event__reset-btn" type="reset">${getDeleteButtonText()}</button>
     ${rollUpBtnTemplate}
   </header>
   <section class="event__details">
@@ -246,7 +238,6 @@ export default class TripPointEditView extends AbstractStatefulView {
   #clickHandler = () => {
     this.updateElement(this._state);
     this._callback.click(this._state);
-    // this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#clickHandler);
   };
 
   setSubmitHandler = (callback) => {
@@ -262,13 +253,11 @@ export default class TripPointEditView extends AbstractStatefulView {
   #submitHandler = (evt) => {
     evt.preventDefault();
     this._callback.submit(this.parseStateToPoint(this._state));
-    // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
   #deleteHandler = (evt) => {
     evt.preventDefault();
     this._callback.delete(this.parseStateToPoint(this._state));
-    // this.element.querySelector('.event--edit').removeEventListener('submit', this.#submitHandler);
   };
 
   #eventTypeOnChangeHandler = (evt) => {
@@ -330,7 +319,7 @@ export default class TripPointEditView extends AbstractStatefulView {
         dateFormat: 'd/m/y H/i',
         maxDate: this._state.dateTo,
         defaultDate: this._state.dateFrom,
-        onChange: this.#dueDateFromChangeHandler, // На событие flatpickr передаём наш колбэк
+        onChange: this.#dueDateFromChangeHandler,
       },
     );
 
@@ -341,7 +330,7 @@ export default class TripPointEditView extends AbstractStatefulView {
         dateFormat: 'd/m/y H/i',
         minDate:  this._state.dateFrom,
         defaultDate: this._state.dateTo,
-        onChange: this.#dueDateToChangeHandler, // На событие flatpickr передаём наш колбэк
+        onChange: this.#dueDateToChangeHandler,
       },
     );
   };
