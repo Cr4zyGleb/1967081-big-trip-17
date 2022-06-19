@@ -7,7 +7,7 @@ const createTripPointViewTemplate = (point, pointsModel) => {
   const { destination, basePrice, dateFrom, dateTo, isFavorite, offers, type } = point;
 
   const dateFromHumanize = dateFrom !== null
-    ? humanizeTaskDueDate(dateFrom, )
+    ? humanizeTaskDueDate(dateFrom,)
     : '';
 
   const dateFromHumanizeHours = dateFrom !== null
@@ -30,13 +30,15 @@ const createTripPointViewTemplate = (point, pointsModel) => {
 
     offers.forEach((id) => {
       const offer = getOfferById(id, type, pointsModel);
-      const { title, price } = offer;
-      const template = `<li class="event__offer">
+      if (offer) {
+        const { title, price } = offer;
+        const template = `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       +€&nbsp;
       <span class="event__offer-price">${price}</span>
       </li>`;
-      templateList = templateList + template;
+        templateList = templateList + template;
+      }
     });
 
     return templateList;

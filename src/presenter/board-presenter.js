@@ -8,22 +8,30 @@ import { EmptyListMessage, FilterType, SortType, UpdateType, UserAction } from '
 import { remove } from '../framework/render.js';
 import { getFilteredPoints } from '../utils/filters.js';
 import { getNewPoint } from '../mock/trip.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 export default class BoardPresenter {
   #pointsModel = null;
   #fitersModel = null;
   #currentSortType = null;
-  // #previousSortType = null;
+  #newPointPresenter = null;
   #pageTripEventsElement = null;
   #tripListComponent = null;
   #tripEmptyListComponent = null;
   #sortComponent = null;
   #pointPresenter = new Map();
+  #newPointButtonComponent = null;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
-  constructor(pageTripEventsElement, pointsModel, fitersModel) {
+  constructor(pageTripEventsElement, pointsModel, fitersModel, newPointButtonComponent) {
     this.#pageTripEventsElement = pageTripEventsElement;
     this.#pointsModel = pointsModel;
     this.#fitersModel = fitersModel;
+    this.#newPointButtonComponent = newPointButtonComponent;
     this.#currentSortType = SortType.DATE;
     this.#sortComponent = new TripSortView(SortType.DATE);
     this.#tripListComponent = new TripListView();
@@ -32,7 +40,6 @@ export default class BoardPresenter {
   }
 
   get points() {
-
     switch (this.#currentSortType) {
       case SortType.PRICE:
         this.#pointsModel.points.sort(sortTaskPrice);
@@ -61,8 +68,8 @@ export default class BoardPresenter {
 
   addNewPoint(callback) {
     this.#resetView();
-    this.newPointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
-    this.newPointPresenter.init(getNewPoint(), callback);
+    this.#newPointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel, this.#newPointButtonComponent);
+    this.#newPointPresenter.init(getNewPoint(this.#pointsModel), callback);
   }
 
   #renderBoard = ({ renderAll = false } = {}) => {
@@ -106,7 +113,7 @@ export default class BoardPresenter {
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel);
+    const pointPresenter = new PointPresenter(this.#tripListComponent, this.#handleViewAction, this.#handleModeChange, this.#pointsModel, this.#newPointButtonComponent);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -191,25 +198,45 @@ export default class BoardPresenter {
     this.#renderPoints(this.points);
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        }
+        catch (error) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_TASK:
+        this.#newPointPresenter.setSaving();
         this.#currentSortType = SortType.DATE;
         // this.#sortComponent = new TripSortView(SortType.DATE);
         this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-        this.#pointsModel.addPoint(updateType, update);
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        }
+        catch (error) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_TASK:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        }
+        catch (error) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
