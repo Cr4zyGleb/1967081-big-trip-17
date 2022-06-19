@@ -17,8 +17,7 @@ const createTripPointViewTemplate = (point, pointsModel) => {
   const dateToHumanizeHours = dateTo !== null
     ? humanizeTaskDueDate(dateTo, DATE_HOURS_FORMAT)
     : '';
-
-  const destinationName = destination.name;
+  const destinationName = destination ? destination.name : '';
 
   const eventDuration = getTimeDuration(dateFrom, dateTo);
 
@@ -95,36 +94,6 @@ export default class TripPointView extends AbstractView {
   get template() {
     return createTripPointViewTemplate(this.#point, this.#pointsModel);
   }
-
-  // static parsePointToState = (point) => ({...point,
-  //   isDueDate: point.dueDate !== null,
-  //   isRepeating: isTaskRepeating(point.repeating),
-  // });
-
-  // static parseStateToPoint = (state) => {
-  //   const point = {...state};
-
-  //   if (!point.isDueDate) {
-  //     point.dueDate = null;
-  //   }
-
-  //   if (!point.isRepeating) {
-  //     point.repeating = {
-  //       mo: false,
-  //       tu: false,
-  //       we: false,
-  //       th: false,
-  //       fr: false,
-  //       sa: false,
-  //       su: false,
-  //     };
-  //   }
-
-  //   delete point.isDueDate;
-  //   delete point.isRepeating;
-
-  //   return point;
-  // };
 
   setClickHandler = (callback) => {
     this._callback.click = callback;

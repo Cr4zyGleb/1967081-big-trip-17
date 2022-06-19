@@ -9,10 +9,9 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
   const isNew = point.isNew;
   const typeOffers = getOfferByType(type, pointsModel);
   const formatDate = 'DD/MM/YY HH:mm';
-  const isDueDestination = destination !== null;
-  const destinationName = isDueDestination ? destination.name : '';
-  const destinationDescription = isDueDestination ? destination.description : '';
-  const destinationPictures = isDueDestination ? destination.pictures : [];
+  const destinationName = destination ? destination.name : ' ';
+  const destinationDescription = destination ? destination.description : '';
+  const destinationPictures = destination ? destination.pictures : [];
   const dateFromHumanize = dateFrom !== null
     ? humanizeTaskDueDate(dateFrom, formatDate)
     : '';
@@ -91,7 +90,7 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
       ${photosTemplate}
     </section>`);
 
-  const destinationTemplate = isDueDestination ? getDestinationTemplate() : '';
+  const destinationTemplate = destination ? getDestinationTemplate() : '';
 
   const getDestinationListTemplate = () => {
     let destinationList = '';
@@ -223,9 +222,9 @@ export default class TripPointEditView extends AbstractStatefulView {
     this.#pointsModel = pointsModel;
     this._state = {
       ...point,
-      destination: {
+      destination: point.destination ? {
         ...point.destination
-      },
+      } : null,
       offers: [
         ...point.offers
       ]
@@ -328,7 +327,6 @@ export default class TripPointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        // time_24hr: true,
         dateFormat: 'd/m/y H/i',
         maxDate: this._state.dateTo,
         defaultDate: this._state.dateFrom,
@@ -340,7 +338,6 @@ export default class TripPointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         enableTime: true,
-        // time_24hr: true,
         dateFormat: 'd/m/y H/i',
         minDate:  this._state.dateFrom,
         defaultDate: this._state.dateTo,
