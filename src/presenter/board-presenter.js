@@ -216,11 +216,12 @@ export default class BoardPresenter {
         break;
       case UserAction.ADD_TASK:
         this.#newPointPresenter.setSaving();
-        this.#currentSortType = SortType.DATE;
-        // this.#sortComponent = new TripSortView(SortType.DATE);
-        this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
         try {
           await this.#pointsModel.addPoint(updateType, update);
+          this.#currentSortType = SortType.DATE;
+          // this.#sortComponent = new TripSortView(SortType.DATE);
+          this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         }
         catch (error) {
           this.#newPointPresenter.setAborting();
@@ -230,6 +231,9 @@ export default class BoardPresenter {
         this.#pointPresenter.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
+          this.#currentSortType = SortType.DATE;
+          // this.#sortComponent = new TripSortView(SortType.DATE);
+          this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         }
         catch (error) {
           this.#pointPresenter.get(update.id).setAborting();

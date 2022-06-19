@@ -19,7 +19,7 @@ export const getNewPoint = (
   const type = TYPES[0];
   const point = {
     isNew: true,
-    destination: {},
+    destination: null,
     basePrice: 0,
     id: nanoid(),
     dateFrom: dateFromHumanize,

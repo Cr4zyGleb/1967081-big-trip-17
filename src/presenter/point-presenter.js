@@ -86,11 +86,11 @@ export default class PointPresenter {
   // };
 
   #replacePointToForm = () => {
+    this.#changeMode();
     this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
     this.restoreTripPointEditHandlers();
     replace(this.#editPointView, this.#tripComponent);
     remove(this.#tripComponent);
-    // this.#changeMode();
     this.#mode = Mode.EDITING;
   };
 
@@ -141,7 +141,7 @@ export default class PointPresenter {
         userAction,
         updateType,
         { ...pointSubmit, isNew: false });
-      this.#replaceFormToPoint();
+      // this.#replaceFormToPoint();
     });
     this.#editPointView.setDeleteHandler((pointSubmit) => {
       if (!pointSubmit.isNew) {
@@ -159,36 +159,31 @@ export default class PointPresenter {
   };
 
   setSaving = () => {
-    // if(this.#mode === Mode.EDITING){
-    this.#editPointView.updateElement({ isSaving: true, isDeleting: false});
-    // }
+    this.#editPointView.updateElement({ isSaving: true, isDeleting: false });
+    // this.restoreTripPointEditHandlers();
   };
 
   setDeleting = () => {
-    // if(this.#mode === Mode.EDITING){
-    this.#editPointView.updateElement({ isDeleting: true, isSaving: false});
-    // }
+    this.#editPointView.updateElement({ isDeleting: true, isSaving: false });
+    // this.restoreTripPointEditHandlers();
   };
 
   setAborting = () => {
-    // if (this.#mode === Mode.DEFAULT) {
-    this.#editPointView.shake();
-    // this.#pointComponent.shake();
-    // return;
-    //}
 
     const resetFormState = () => {
       this.#editPointView.updateElement({
         isSaving: false,
         isDeleting: false,
       });
+      this.restoreTripPointEditHandlers();
     };
-
     this.#editPointView.shake(resetFormState);
   };
 
   resetView = () => {
-    this.#replaceFormToPoint();
+    if (this.#mode === Mode.EDITING) {
+      this.#replaceFormToPoint();
+    }
   };
 
   destroy = () => {
