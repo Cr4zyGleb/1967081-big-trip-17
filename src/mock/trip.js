@@ -3,16 +3,13 @@ import { nanoid } from 'nanoid';
 import { TYPES } from '../const.js';
 import { humanizeTaskDueDate } from '../utils/utils.js';
 
-export const getNewPoint = (
-  //pointsModel
-) => {
+export const getNewPoint = () => {
   const formatDate = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
   const dateFrom = dayjs();
   const dateTo = dayjs().add(1, 'hour');
   const dateFromHumanize = dateFrom !== null
     ? humanizeTaskDueDate(dateFrom, formatDate)
     : '';
-  // const destination = pointsModel.getDestinationByT(TYPES[0]);
   const dateToHumanize = dateTo !== null
     ? humanizeTaskDueDate(dateTo, formatDate)
     : '';

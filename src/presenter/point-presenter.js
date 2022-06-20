@@ -37,9 +37,9 @@ export default class PointPresenter {
     const prevTripComponent = this.#tripComponent;
     const prevEditPointView = this.#editPointView;
     this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
-    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
-    this.restoreTripPointHandlers();
-    this.restoreTripPointEditHandlers();
+    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel, this.#restoreTripPointEditHandlers);
+    this.#restoreTripPointHandlers();
+    this.#restoreTripPointEditHandlers();
     const place = point.isNew ? RenderPosition.AFTERBEGIN : RenderPosition.BEFOREEND;
 
     if (point.isNew) {
@@ -72,8 +72,8 @@ export default class PointPresenter {
 
   #replacePointToForm = () => {
     this.#changeMode();
-    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel);
-    this.restoreTripPointEditHandlers();
+    this.#editPointView = new TripPointEditView(this.#point, this.#pointsModel, this.#restoreTripPointEditHandlers);
+    this.#restoreTripPointEditHandlers();
     replace(this.#editPointView, this.#tripComponent);
     remove(this.#tripComponent);
     this.#mode = Mode.EDITING;
@@ -81,7 +81,7 @@ export default class PointPresenter {
 
   #replaceFormToPoint = () => {
     this.#tripComponent = new TripPointView(this.#point, this.#pointsModel);
-    this.restoreTripPointHandlers();
+    this.#restoreTripPointHandlers();
     replace(this.#tripComponent, this.#editPointView);
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
     remove(this.#editPointView);
@@ -97,7 +97,7 @@ export default class PointPresenter {
     }
   };
 
-  restoreTripPointHandlers = () => {
+  #restoreTripPointHandlers = () => {
     this.#tripComponent.setClickHandler(() => {
       this.#replacePointToForm();
       document.addEventListener('keydown', this.#onEscKeyDownHandler);
@@ -106,7 +106,7 @@ export default class PointPresenter {
     this.#tripComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
   };
 
-  restoreTripPointEditHandlers = () => {
+  #restoreTripPointEditHandlers = () => {
     if (!this.#point.isNew) {
       this.#editPointView.setClickHandler(this.#replaceFormToPoint);
     }
@@ -148,7 +148,7 @@ export default class PointPresenter {
         isSaving: false,
         isDeleting: false,
       });
-      this.restoreTripPointEditHandlers();
+      this.#restoreTripPointEditHandlers();
     };
     this.#editPointView.shake(resetFormState);
   };

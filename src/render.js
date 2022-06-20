@@ -7,13 +7,6 @@ const RenderPosition = {
   AFTEREND: 'afterend',
 };
 
-const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-
-  return newElement.firstElementChild;
-};
-
 const render = (component, container, place = RenderPosition.BEFOREEND) => {
   const element = component.element;
 
@@ -55,21 +48,5 @@ const replace = (newComponent, oldComponent) => {
   parent.replaceChild(newElement, oldElement);
 };
 
-/**
- * Функция для удаления компонента
- * @param {AbstractView} component Компонент, который нужно удалить
- */
-const remove = (component) => {
-  if (component === null) {
-    return;
-  }
 
-  if (!(component instanceof AbstractView)) {
-    throw new Error('Can remove only components');
-  }
-
-  component.element.remove();
-  component.removeElement();
-};
-
-export {RenderPosition, createElement, render, replace, remove};
+export {RenderPosition, render, replace};

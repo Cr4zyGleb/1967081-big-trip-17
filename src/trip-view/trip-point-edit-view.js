@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getOfferByType } from '../mock/offers.js';
-import { addArrElement, deleteArrElement, humanizeTaskDueDate } from '../utils/utils.js';
+import { addElementToArray, deleteElementFromArray, humanizeTaskDueDate } from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -30,8 +30,8 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
 
   const getPhotosTemplate = () => {
     let photosImgElements = '';
-    for (let i = 0; i < destinationPictures.length; i++) {
-      const newPhotosImgElements = `<img class="event__photo" src="${destinationPictures[i].src}.jpg" alt="Event photo">`;
+    for (const element of destinationPictures) {
+      const newPhotosImgElements = `<img class="event__photo" src="${element.src}.jpg" alt="Event photo">`;
       photosImgElements = photosImgElements + newPhotosImgElements;
     }
     return `<div class="event__photos-container">
@@ -43,11 +43,10 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
 
   const getOffersTemplate = () => {
     let offersElements = '';
-    for (let i = 0; i < typeOffers.offers.length; i++) {
-      const offer = typeOffers.offers[i];
-      const offerId = offer.id;
-      const offerTitle = offer.title;
-      const offerPrice = offer.price;
+    for (const element of typeOffers.offers) {
+      const offerId = element.id;
+      const offerTitle = element.title;
+      const offerPrice = element.price;
       const offerChecked = offers.includes(offerId) ? 'Checked' : '';
       const newOffersElements = `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitle}-${offerId}" data-offer-id = "${offerId}" type="checkbox" name="event-offer-${offerTitle}" ${offerChecked}>
@@ -116,47 +115,47 @@ const createTripPointEditViewTemplate = (point, pointsModel) => {
           <legend class="visually-hidden">Event type</legend>
 
           <div class="event__type-item">
-            <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
+            <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === 'taxi' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
+            <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${type === 'bus' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
+            <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${type === 'train' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
+            <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === 'ship' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
+            <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === 'drive' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+            <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${type === 'flight' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
+            <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${type === 'check-in' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
+            <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === 'sightseeing' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
+            <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${type === 'restaurant' ? 'checked' : '' }>
             <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
           </div>
         </fieldset>
@@ -209,7 +208,8 @@ export default class TripPointEditView extends AbstractStatefulView {
   #point = null;
   #pointsModel = null;
   #isNew = null;
-  constructor(point, pointsModel) {
+  #restoreHandlers = null;
+  constructor(point, pointsModel, restoreHandlers) {
     super();
     this.#pointsModel = pointsModel;
     this._state = {
@@ -223,6 +223,7 @@ export default class TripPointEditView extends AbstractStatefulView {
     };
     this.#setInnerHandlers();
     this.#setDatePickers();
+    this.#restoreHandlers = restoreHandlers;
     this.#isNew = point.isNew;
   }
 
@@ -265,6 +266,7 @@ export default class TripPointEditView extends AbstractStatefulView {
       type: evt.target.value,
       offers: []
     });
+    this.#restoreHandlers();
   };
 
   #eventDestinationOnChangeHandler = (evt) => {
@@ -274,6 +276,7 @@ export default class TripPointEditView extends AbstractStatefulView {
         this.updateElement({
           destination: value
         });
+        this.#restoreHandlers();
       } else {
         evt.target.value = this._state.destination.name;
       }
@@ -289,12 +292,12 @@ export default class TripPointEditView extends AbstractStatefulView {
   #eventOffersOnChangeHandler = (evt) => {
     const offerId = Number(evt.target.dataset.offerId);
     if (evt.target.checked) {
-      const newOffers = addArrElement(this._state.offers, offerId);
+      const newOffers = addElementToArray(this._state.offers, offerId);
       this._setState({
         offers: newOffers
       });
     } else {
-      const newOffers = deleteArrElement(this._state.offers, offerId);
+      const newOffers = deleteElementFromArray(this._state.offers, offerId);
       this._setState({
         offers: newOffers
       });
