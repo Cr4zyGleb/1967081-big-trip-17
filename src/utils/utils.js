@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
+import { TYPES } from '../const.js';
 
 const humanizeTaskDueDate = (dueDate, format = 'D MMM') => dayjs(dueDate).format(format);
 
@@ -69,4 +71,41 @@ const sortTaskTime = (taskA, taskB) => {
 
 const sortTaskPrice = (taskA, taskB) => (taskB.basePrice - taskA.basePrice);
 
-export { humanizeTaskDueDate, getTimeDuration, sortTaskDate, sortTaskTime, sortTaskPrice, addElementToArray, deleteElementFromArray };
+const getNewPoint = () => {
+  const formatDate = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+  const dateFrom = dayjs();
+  const dateTo = dayjs().add(1, 'hour');
+  const dateFromHumanize = dateFrom !== null
+    ? humanizeTaskDueDate(dateFrom, formatDate)
+    : '';
+  const dateToHumanize = dateTo !== null
+    ? humanizeTaskDueDate(dateTo, formatDate)
+    : '';
+  const type = TYPES[0];
+  const point = {
+    isNew: true,
+    destination: null,
+    basePrice: 0,
+    id: nanoid(),
+    dateFrom: dateFromHumanize,
+    dateTo: dateToHumanize,
+    isFavorite: false,
+    type: type,
+    offers: []
+  };
+
+  return point;
+};
+
+const getOfferByType  = (type, pointsModel) => {
+  const offerByType = pointsModel.offers.find((item) => item.type === type);
+  return offerByType;
+};
+
+const getOfferById  = (id, type, pointsModel) => {
+  const offerByType = pointsModel.offers.find((item) => item.type === type);
+  const offer = offerByType.offers.find((item) => item.id === id);
+  return offer;
+};
+
+export { humanizeTaskDueDate, getTimeDuration, sortTaskDate, sortTaskTime, sortTaskPrice, addElementToArray, deleteElementFromArray, getNewPoint, getOfferByType, getOfferById };

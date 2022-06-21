@@ -1,7 +1,7 @@
 import { DATE_HOURS_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view';
-import { getTimeDuration, humanizeTaskDueDate } from '../utils/utils.js';
-import { getOfferById } from '../mock/offers';
+import { getOfferById, getTimeDuration, humanizeTaskDueDate } from '../utils/utils.js';
+
 
 const createTripPointViewTemplate = (point, pointsModel) => {
   const { destination, basePrice, dateFrom, dateTo, isFavorite, offers, type } = point;

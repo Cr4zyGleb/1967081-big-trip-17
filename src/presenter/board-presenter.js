@@ -3,11 +3,10 @@ import TripSortView from '../trip-view/trip-sort-view.js';
 import TripListView from '../trip-view/trip-list-view.js';
 import TripEmptyListView from '../trip-view/trip-empty-list-view.js';
 import PointPresenter from './point-presenter.js';
-import { sortTaskDate, sortTaskPrice, sortTaskTime } from '../utils/utils.js';
+import { getNewPoint, sortTaskDate, sortTaskPrice, sortTaskTime } from '../utils/utils.js';
 import { EmptyListMessage, FilterType, SortType, UpdateType, UserAction } from '../const.js';
 import { remove } from '../framework/render.js';
 import { getFilteredPoints } from '../utils/filters.js';
-import { getNewPoint } from '../mock/trip.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TimeLimit = {
@@ -196,7 +195,6 @@ export default class BoardPresenter {
         this.#pointPresenter.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
-          this.#newPointButtonComponent.setAvailability(false);
           this.#currentSortType = SortType.DATE;
           this.#fitersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         }

@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getOfferByType } from '../mock/offers.js';
-import { addElementToArray, deleteElementFromArray, humanizeTaskDueDate } from '../utils/utils.js';
+import { addElementToArray, deleteElementFromArray, getOfferByType, humanizeTaskDueDate } from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
